@@ -42,7 +42,7 @@ class CandleChart:
 
 
     def closed_values(self):
-        return [value.closed for element in self.data]
+        return [value.closed for value in self.data]
 
     def __setitem__(self, key):
         # We don't want setting custom candles, tis market manipulation

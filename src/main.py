@@ -1,4 +1,3 @@
-from pycoingecko import CoinGeckoAPI
 import cryptowatch as cw
 from pprint import pprint
 from utils import cprint
@@ -6,19 +5,9 @@ import time
 import json
 from candles import Candle, CandleChart
 
-
-cg = CoinGeckoAPI()
 with open("../credentials.txt", 'r') as f:
     cw.api_key = f.readline()
 
-
-
-def get_all_coin_ids(input_data):
-    coin_ids = []
-    for elem in input_data:
-        if "-long-" not in elem["id"] and "-short-" not in elem["id"]:
-            coin_ids.append(elem["id"])
-    return coin_ids
 
 def beautify_json(input_json):
     json.dumps(json.loads(input_json), sort_keys=True, indent=4)
@@ -40,12 +29,24 @@ def calculate_rsi(rsi_range, market_values):
     #print(len(market_values))
     up_values = []
     down_values = []
+    """
     for index in range(1, len(market_values)):
         change = market_values[index] - market_values[index - 1]
         #print(str(change))
         up_values.append(0.0)
         down_values.append(0.0)
-        if change > 0:
+        if change >= 0:
+            up_values[index-1] = abs(float(change))
+        else:
+            down_values[index-1] = abs(float(change))"""
+    for index in range(1, len(market_values)):
+        change = 0.0
+        if(market_values[index] > 0):
+            change = (100*((market_values[index] - market_values[index - 1]) / market_values[index]))
+        #print(str(change))
+        up_values.append(0.0)
+        down_values.append(0.0)
+        if change >= 0:
             up_values[index-1] = abs(float(change))
         else:
             down_values[index-1] = abs(float(change))
@@ -75,7 +76,10 @@ def calculate_rsi(rsi_range, market_values):
     """RS = AvgU / AvgD -> This is how we calculate the relative strength"""
     relative_strength = []
     for index in range(0, len(avg_up)):
-        relative_strength.append(avg_up[index] / (avg_down[index]))
+        if(avg_down[index] > 0):
+            relative_strength.append(avg_up[index] / (avg_down[index]))
+        else:
+            relative_strength.append(1)
         #print("The relative strength is: " + str(relative_strength[index]) + "  avg_up " + str(avg_up[index]) + "  avg_down " + str(avg_down[index]))
     #print(relative_strength)
     """Finally, we know the Relative Strength and we can apply the whole RSI formula:
@@ -119,9 +123,9 @@ if __name__ == "__main__":
         candles = json.load(dump)
 
     candlechart = CandleChart("BINANCE", "btcusdt", "1h")
-    for candle in candlechart:
-        cprint(candle)
-    quit()
+    #for candle in candlechart:
+        #cprint(candle)
+    #quit()
 
 
 
@@ -134,34 +138,44 @@ if __name__ == "__main__":
         pair = market.pair
         if(pair.startswith("btc") and pair.endswith("usdt")):
             candle_chart = CandleChart("BINANCE", pair, "1h")
-            for candle in candle_chart:
-                cprint(candle)
-            break
-            closed_prices_result = []
-            for candle in candles.of_1h:
-                closed_prices_result.append(candle[3])
+            #for candle in candle_chart:
+            #    cprint(candle)
+            #break
+            #closed_prices_result = []
+            #for candle in candles.of_1h:
+                #closed_prices_result.append(candle[3])
             #pprint(closed_prices_result)
-            rsi_values = calculate_rsi(14, closed_prices_result)
-            rsi_values_average = sum(rsi_values) / len(rsi_values)
-            rsi_diff = 50.0 - rsi_values_average
-            if(rsi_values_average < 30.0):
-                for index in range(0, len(rsi_values)):
-                    rsi_diff_coeff = rsi_values[index] / rsi_values_average
-                    rsi_values[index] += rsi_diff_coeff*rsi_diff
+            print(pair)
+            rsi_values = calculate_rsi(14, candle_chart.closed_values())
+            print("RSI VALUE FOR PAIR {} IS {}".format(str(pair), str(rsi_values[-1])))
+            for rsi in rsi_values:
+                print(rsi)
+            break
+            #rsi_values_average = sum(rsi_values) / len(rsi_values)
+            #rsi_diff = 50.0 - rsi_values_average
+            if(rsi_values[-1] < 15.0):
+                print("LOW RSI ON PAIR:" + str(pair))
+                print("LOW RSI ON PAIR:" + str(pair))
+                print("LOW RSI ON PAIR:" + str(pair))
+                print("LOW RSI ON PAIR:" + str(pair))
+                print("LOW RSI ON PAIR:" + str(pair))
+                print("LOW RSI ON PAIR:" + str(pair))
+                #break
+
 
 
             """ PROBLEM TO SOLVE::::::   For some reason some of the tokens have a really low RSI value - whats the reason
             and how can I fix it."""
-            with open("test3.csv", "w") as f:
-                for elem in rsi_values:
-                    f.write(str(elem) + "\n")
+            #######with open("test3.csv", "w") as f:
+                #######for elem in rsi_values:
+                    #######f.write(str(elem) + "\n")
             #print(elem)
 
             #print(candles._allowance.remaining)
             #if(rsi_values[-1] < 20.0):
-            print("{}:{}".format(market.exchange, pair).upper())
-            print(rsi_values[-1])
-            break
+            #print("{}:{}".format(market.exchange, pair).upper())
+            #print(rsi_values[-1])
+            #break
                 #print(rsi_values)
             #else:
                 #print("Nothing on {}:{}".format(market.exchange, pair).upper())
