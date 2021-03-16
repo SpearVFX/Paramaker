@@ -1,9 +1,11 @@
 import cryptowatch as cw
 from pprint import pprint
-from utils import cprint
+from utils import cprint, ranked_color
 import time
 import json
 from candles import Candle, CandleChart
+import os
+clear = lambda: os.system('cls')
 
 with open("../credentials.txt", 'r') as f:
     cw.api_key = f.readline()
@@ -134,9 +136,10 @@ if __name__ == "__main__":
     #print(cg.ping())
     binance = cw.markets.list("BINANCE")
     #for pair in binance.pair:
+    all_last_rsi_values = []
     for market in binance.markets:
         pair = market.pair
-        if(pair.startswith("btc") and pair.endswith("usdt")):
+        if(pair.startswith("") and pair.endswith("usdt")):
             candle_chart = CandleChart("BINANCE", pair, "1h")
             #for candle in candle_chart:
             #    cprint(candle)
@@ -145,21 +148,21 @@ if __name__ == "__main__":
             #for candle in candles.of_1h:
                 #closed_prices_result.append(candle[3])
             #pprint(closed_prices_result)
-            print(pair)
             rsi_values = calculate_rsi(14, candle_chart.closed_values())
-            print("RSI VALUE FOR PAIR {} IS {}".format(str(pair), str(rsi_values[-1])))
-            for rsi in rsi_values:
-                print(rsi)
-            break
+            all_last_rsi_values.append((pair, rsi_values[-1]))
+            all_last_rsi_values = sorted(all_last_rsi_values, key=lambda x: x[1], reverse=True)
+            clear()
+            for item in all_last_rsi_values:
+                print(item[0], ranked_color(item[1]))
+
+
+            #print("RSI VALUE FOR PAIR {} IS {}".format(str(pair), str(rsi_values[-1])))
+            #for rsi in rsi_values:
+                #print(rsi)
+            #break
             #rsi_values_average = sum(rsi_values) / len(rsi_values)
             #rsi_diff = 50.0 - rsi_values_average
-            if(rsi_values[-1] < 15.0):
-                print("LOW RSI ON PAIR:" + str(pair))
-                print("LOW RSI ON PAIR:" + str(pair))
-                print("LOW RSI ON PAIR:" + str(pair))
-                print("LOW RSI ON PAIR:" + str(pair))
-                print("LOW RSI ON PAIR:" + str(pair))
-                print("LOW RSI ON PAIR:" + str(pair))
+
                 #break
 
 
