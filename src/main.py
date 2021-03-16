@@ -2,8 +2,8 @@ import cryptowatch as cw
 from pprint import pprint
 from utils import cprint, ranked_color
 import time
-import json
 from candles import Candle, CandleChart
+from ui import ParaMakerWindow
 import os
 clear = lambda: os.system('cls')
 
@@ -120,7 +120,7 @@ def print_all_coins():
     pprint(coin_markets)
 """
 if __name__ == "__main__":
-
+    paraMakerWindow = ParaMakerWindow();
     with open('../candledata.json', 'r') as dump:
         candles = json.load(dump)
 
@@ -167,8 +167,6 @@ if __name__ == "__main__":
 
 
 
-            """ PROBLEM TO SOLVE::::::   For some reason some of the tokens have a really low RSI value - whats the reason
-            and how can I fix it."""
             #######with open("test3.csv", "w") as f:
                 #######for elem in rsi_values:
                     #######f.write(str(elem) + "\n")
