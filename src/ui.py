@@ -8,18 +8,22 @@ from PyQt5.QtCore import Qt, QPointF
 from PyQt5 import QtChart as qc
 
 
-class ParaMakerWindow:
+class ParaMakerApplication(QApplication):
+    pass
+
+
+class ParaMakerWindow(QMainWindow):
     def __init__(self):
-        data = ((1, 7380, 7520, 7380, 7510, 7324),
-    (2, 7520, 7580, 7410, 7440, 7372),
-    (3, 7440, 7650, 7310, 7520, 7434),
-    (4, 7450, 7640, 7450, 7550, 7480),
-    (5, 7510, 7590, 7460, 7490, 7502),
-    (6, 7500, 7590, 7480, 7560, 7512),
-    (7, 7560, 7830, 7540, 7800, 7584))
+        super().__init__()
+        self.setStyleSheet("background-color: black;")
+        self.setWindowTitle("Paramaker")
+        self.setGeometry(200,200,1000,400)
+        self.show()
 
 
-        app = QApplication([])
+
+def plot_candlechart(ohlc_data):
+        app = ParaMakerApplication([])
         #
         series = QCandlestickSeries()
         series.setDecreasingColor(Qt.red)
@@ -29,10 +33,13 @@ class ParaMakerWindow:
         tm = []  # stores str type data
 
         # in a loop,  series and ma5 append corresponding data
-        for num, o, h, l, c, m in data:
-            series.append(QCandlestickSet(o, h, l, c))
-            ma5.append(QPointF(num, m))
-            tm.append(str(num))
+        for candle in ohlc_data:
+            series.append(QCandlestickSet(candle.opened,
+                                          candle.high,
+                                          candle.low,
+                                          candle.closed))
+            #ma5.append(QPointF(num, m))
+            tm.append(str(candle.timestamp))
 
         chart = QChart()
 
@@ -47,9 +54,6 @@ class ParaMakerWindow:
         chart.axisX(ma5).setVisible(False)
 
         chartview = QChartView(chart)
-        ui = QMainWindow()
-        ui.setWindowTitle("Test")
-        ui.setGeometry(50, 50, 500, 300)
+        ui = ParaMakerWindow()
         ui.setCentralWidget(chartview)
-        ui.show()
         sys.exit(app.exec_())

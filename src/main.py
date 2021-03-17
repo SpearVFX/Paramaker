@@ -1,9 +1,9 @@
 import cryptowatch as cw
 from pprint import pprint
 from utils import cprint, ranked_color
-import time
+import time, json
 from candles import Candle, CandleChart
-from ui import ParaMakerWindow
+from ui import ParaMakerWindow, ParaMakerApplication, plot_candlechart
 import os
 clear = lambda: os.system('cls')
 
@@ -120,11 +120,12 @@ def print_all_coins():
     pprint(coin_markets)
 """
 if __name__ == "__main__":
-    paraMakerWindow = ParaMakerWindow();
     with open('../candledata.json', 'r') as dump:
         candles = json.load(dump)
 
     candlechart = CandleChart("BINANCE", "btcusdt", "1h")
+    plot_candlechart(candlechart.data)
+
     #for candle in candlechart:
         #cprint(candle)
     #quit()
