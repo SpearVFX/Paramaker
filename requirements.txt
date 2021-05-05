@@ -1,0 +1,4 @@
+PyQt5_sip == 12.8.1
+colorama == 0.4.4
+cryptowatch_sdk == 0.0.14
+termcolor == 1.1.0
