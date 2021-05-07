@@ -123,13 +123,13 @@ if __name__ == "__main__":
     with open('../candledata.json', 'r') as dump:
         candles = json.load(dump)
 
-    candlechart = CandleChart("BINANCE", "btcusdt", "1h")
+    candlechart = CandleChart("BINANCE", "btcusdt", "15m")
+    print(type(candlechart.data))
     plot_candlechart(candlechart.data)
-
+    quit()
     #for candle in candlechart:
         #cprint(candle)
     #quit()
-
 
 
 
